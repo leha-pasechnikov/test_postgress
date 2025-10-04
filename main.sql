@@ -72,7 +72,8 @@ INSERT INTO product_category (product_id, category_id) VALUES
 INSERT INTO clients(id, name, address) VALUES 
 (1, 'name1', 'address1'),
 (2, 'name2', 'address2'),
-(3, 'name3', 'address3');
+(3, 'name3', 'address3'),
+(4, 'name4', 'address4');
 
 INSERT INTO orders(id, client_id) VALUES 
 (1, 1),
@@ -88,11 +89,11 @@ INSERT INTO order_products(order_id, product_id, count) VALUES
 
 SELECT 
 	c.name, 
-	SUM((op.count * p.price)) as summa
-FROM products p
-JOIN order_products op ON p.id=op.product_id
-JOIN orders o ON o.id = op.order_id
-JOIN clients c ON c.id = o.client_id
+	COALESCE(SUM(op.count * p.price),0.00) as summa
+FROM clients c
+LEFT JOIN orders o ON c.id = o.client_id
+LEFT JOIN order_products op ON o.id = op.order_id
+LEFT JOIN products p ON p.id=op.product_id
 GROUP BY c.id;
 
 SELECT

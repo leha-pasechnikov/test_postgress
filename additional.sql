@@ -195,7 +195,8 @@ INSERT INTO product_category (product_id, category_id) VALUES
 INSERT INTO clients(id, username, address) VALUES 
 (1, 'name1', 'address1'),
 (2, 'name2', 'address2'),
-(3, 'name3', 'address3');
+(3, 'name3', 'address3'),
+(4, 'name4', 'address4');
 
 INSERT INTO orders(id, client_id) VALUES 
 (1, 1),
@@ -231,14 +232,15 @@ WHERE c.deleted_at IS NULL
 GROUP BY c.id;
 
 -- Запрос 2.2. Найти количество дочерних элементов первого уровня вложенности для категорий номенклатуры.
-SELECT
-    c2.name, 
-    COUNT(c1.id) as quantity
-FROM categories c2
-LEFT JOIN categories c1 ON c2.id = c1.parent_id
-WHERE c2.deleted_at IS NULL AND c1.deleted_at IS NULL
-GROUP BY c2.id
-ORDER BY c2.id;
+SELECT 
+	c.username, 
+	COALESCE(SUM(op.quantity * p.price),0.00) as summa
+FROM clients c
+LEFT JOIN orders o ON c.id = o.client_id
+LEFT JOIN order_products op ON o.id = op.order_id
+LEFT JOIN products p ON p.id=op.product_id
+WHERE c.deleted_at IS NULL
+GROUP BY c.id;
 
 
 -- Комментарии к таблицам
